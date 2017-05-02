@@ -9,7 +9,7 @@ resource "aws_ecs_task_definition" "microservice" {
     "memory": ${var.memory},
     "portMappings": [{
       "containerPort": ${var.container_port},
-      "hostPort": ${var.port} 
+      "hostPort": 0
     }],
     "environment": [{
       "name" : "LOG_GROUP_NAME",
@@ -29,8 +29,36 @@ resource "aws_ecs_service" "microservice" {
   depends_on = ["aws_iam_role_policy.server_policy"]
 
   load_balancer {
-    elb_name = "${aws_elb.microservice.id}"
+    target_group_arn = "${aws_alb_target_group.microservice.arn}"
     container_name = "${var.vpc}-${var.name}-${var.version}"
     container_port = "${var.container_port}"
   }
 }
+
+resource "aws_alb_listener" "microservice" {
+  load_balancer_arn = "${var.alb_arn}"
+  port              = "80"
+  protocol          = "HTTP"
+  # ssl_policy        = "ELBSecurityPolicy-2015-05"
+  # certificate_arn   = "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"
+
+  default_action {
+    target_group_arn = "${aws_alb_target_group.microservice.arn}"
+    type             = "forward"
+  }
+}
+
+
+resource "aws_alb_target_group" "microservice" {
+  name = "${var.vpc}-${var.name}-${var.version}"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = "${var.vpc_id}"
+
+  health_check {
+    path = "/healthz"
+  }
+}
+
+
+

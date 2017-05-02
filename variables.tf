@@ -10,20 +10,28 @@ variable "region" {
   description = "the region"
 }
 
-variable "subnets" {
-  description = "the subnets"
-}
+# variable "subnets" {
+#   description = "the subnets"
+# }
 
-variable "private_zone_id" {
-  description = "the r53 private zone id"
-}
+# variable "private_zone_id" {
+#   description = "the r53 private zone id"
+# }
 
 variable "cluster_id" {
   description = "the cluster_id"
 }
 
-variable "microservice_elb_security_group_id" {
-  description = "the elb security group to use id"
+# variable "microservice_elb_security_group_id" {
+#   description = "the elb security group to use id"
+# }
+
+variable "alb_id" {
+  description = "the alb to use id"
+}
+
+variable "alb_arn" {
+  description = "the alb to use arn"
 }
 
 variable "name" {
@@ -64,9 +72,10 @@ variable "desired_count" {
 
 variable "internal" {
   description = "is the microservice internal only"
-  default = true
+  default = false
 }
 
 variable "acm_certificate_arn" {
   description = "the ARN of the aws certificate manager certificate to use"
+  default = ""
 }
